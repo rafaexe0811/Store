@@ -1,15 +1,6 @@
 let cartItems = [];
-// Event listeners for "Add to Cart" buttons
-document.querySelectorAll('.add-to-cart').forEach(button => {
-    button.addEventListener('click', () => {
-        const productElement = button.parentElement;
-        const productName = productElement.dataset.name;
-        const productPrice = parseInt(productElement.dataset.price, 10); // Convert to integer
-        addToCart(productName, productPrice);
-        updateCartDisplay();
-    });
-});
-// Function to add items to the cart
+
+// 1. Function to add items to the cart
 function addToCart(name, price) {
     const existingItem = cartItems.find(item => item.name === name);
     if (existingItem) {
@@ -17,13 +8,16 @@ function addToCart(name, price) {
     } else {
         cartItems.push({ name, price, quantity: 1 });
     }
+    updateCartDisplay();
 }
-// Function to update the cart display count
+
+// 2. Function to update the number shown in the header
 function updateCartDisplay() {
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
     document.getElementById('cart-count').textContent = cartCount;
 }
-// Show the cart modal with items
+
+// 3. Function to build and show the modal
 function showCartModal() {
     const cartModal = document.getElementById('cart-modal');
     const cartItemsDisplay = document.getElementById('cart-items');
@@ -33,29 +27,43 @@ function showCartModal() {
     cartItemsDisplay.innerHTML = '';
     cartTotalDisplay.innerHTML = '';
 
-    // Populate modal with cart items
     if (cartItems.length === 0) {
-        // Backticks are required here
         cartItemsDisplay.innerHTML = `<div class="cart-item">Your cart is empty.</div>`;
     } else {
         cartItems.forEach(item => {
-            // Backticks are required here for ${variable} to work
-            cartItemsDisplay.innerHTML += `<div class="cart-item">${item.name} (x${item.quantity}) - NT$ ${item.price * item.quantity}</div>`;
+            // Note the use of backticks `` for template strings
+            cartItemsDisplay.innerHTML += `
+                <div class="cart-item">
+                    ${item.name} (x${item.quantity}) - NT$ ${item.price * item.quantity}
+                </div>`;
         });
+        
         const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        // Backticks are required here
         cartTotalDisplay.innerHTML = `<strong>Total: NT$ ${total}</strong>`;
     }
 
-    // Display the modal
     cartModal.style.display = "block";
 }
-// Event listener to show cart modal when clicking the cart summary
+
+// 4. EVENT LISTENERS
+
+// Listen for "Add to Cart" button clicks
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', (event) => {
+        const productElement = event.target.closest('.product');
+        const productName = productElement.dataset.name;
+        const productPrice = parseInt(productElement.dataset.price, 10);
+        
+        addToCart(productName, productPrice);
+    });
+});
+
+// Show modal when clicking the Cart summary in header
 document.getElementById('cart').addEventListener('click', showCartModal);
-// Close modal functionality
+
+// Close modal when clicking 'X' or outside the box
 document.addEventListener('click', (event) => {
-    if (event.target.matches('.close') || event.target.matches('#cart-modal')) {
+    if (event.target.matches('.close') || event.target.id === 'cart-modal') {
         document.getElementById('cart-modal').style.display = "none";
     }
 });
-<div class="cart-item">Your cart is empty.</div><div class="cart-item">${item.name} (x${item.quantity}) - NT$ ${item.price * item.quantity}</div><strong>Total: NT$ ${total}</strong>
