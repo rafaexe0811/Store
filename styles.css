@@ -114,3 +114,18 @@ strong {
     font-size: 1.2em; /* Total price font size */
     color: #333;
 }
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: #888;
+    font-size: 0.9em;
+    border-top: 1px solid #ddd;
+}
+
+/* Optional: Make the header text look a bit sharper with the new name */
+header h1 {
+    margin: 0;
+    font-size: 2.2em;
+}
