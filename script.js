@@ -1,81 +1,67 @@
 let cartItems = [];
 
-// 1. Function to add items to the cart
-function addToCart(name, price) {
-    const existingItem = cartItems.find(item => item.name === name);
-    if (existingItem) {
-        existingItem.quantity++;
-    } else {
-        cartItems.push({ name, price, quantity: 1 });
-    }
-    updateCartDisplay();
+// Updates the number in the header
+function updateCartCount() {
+    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cart-count').textContent = totalItems;
 }
 
-// 2. Function to update the number shown in the header
-function updateCartDisplay() {
-    const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-    document.getElementById('cart-count').textContent = cartCount;
-}
-
-// 3. Function to build and show the modal
-function showCartModal() {
-    const cartModal = document.getElementById('cart-modal');
-    const cartItemsDisplay = document.getElementById('cart-items');
-    const cartTotalDisplay = document.getElementById('cart-total');
-
-    // Clear previous content
-    cartItemsDisplay.innerHTML = '';
-    cartTotalDisplay.innerHTML = '';
-
+// Shows the modal window
+function showCart() {
+    const itemsContainer = document.getElementById('cart-items');
+    const totalContainer = document.getElementById('cart-total');
+    
+    itemsContainer.innerHTML = '';
+    
     if (cartItems.length === 0) {
-        cartItemsDisplay.innerHTML = `<div class="cart-item">Your cart is empty.</div>`;
+        itemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+        totalContainer.innerHTML = '';
     } else {
         cartItems.forEach(item => {
-            // Note the use of backticks `` for template strings
-            cartItemsDisplay.innerHTML += `
-                <div class="cart-item">
-                    ${item.name} (x${item.quantity}) - NT$ ${item.price * item.quantity}
+            itemsContainer.innerHTML += `
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>NT$ ${item.price * item.quantity}</span>
                 </div>`;
         });
-        
-        const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        cartTotalDisplay.innerHTML = `<strong>Total: NT$ ${total}</strong>`;
+        const grandTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        totalContainer.innerHTML = `<strong>Total: NT$ ${grandTotal}</strong>`;
     }
-
-    cartModal.style.display = "block";
+    
+    document.getElementById('cart-modal').style.display = 'block';
 }
 
-// 4. EVENT LISTENERS
+// THE BUTTON LOGIC
+document.addEventListener('click', function(e) {
+    // 1. Add to Cart Logic
+    if (e.target.classList.contains('add-to-cart')) {
+        const parent = e.target.closest('.product');
+        const name = parent.getAttribute('data-name');
+        const price = parseInt(parent.getAttribute('data-price'));
 
-// Listen for "Add to Cart" button clicks
-document.querySelectorAll('.add-to-cart').forEach(button => {
-    button.addEventListener('click', (event) => {
-        const productElement = event.target.closest('.product');
-        const productName = productElement.dataset.name;
-        const productPrice = parseInt(productElement.dataset.price, 10);
-        
-        addToCart(productName, productPrice);
-    });
-});
+        const existing = cartItems.find(i => i.name === name);
+        if (existing) {
+            existing.quantity++;
+        } else {
+            cartItems.push({ name, price, quantity: 1 });
+        }
+        updateCartCount();
+    }
 
-// Show modal when clicking the Cart summary in header
-document.getElementById('cart').addEventListener('click', showCartModal);
+    // 2. Open Cart
+    if (e.target.closest('#cart')) {
+        showCart();
+    }
 
-// Close modal when clicking 'X' or outside the box
-document.addEventListener('click', (event) => {
-    if (event.target.matches('.close') || event.target.id === 'cart-modal') {
-        document.getElementById('cart-modal').style.display = "none";
+    // 3. Close Cart
+    if (e.target.classList.contains('close') || e.target.id === 'cart-modal') {
+        document.getElementById('cart-modal').style.display = 'none';
+    }
+
+    // 4. Clear Cart Logic
+    if (e.target.id === 'clear-cart-btn') {
+        cartItems = [];
+        updateCartCount();
+        showCart();
     }
 });
-
-// Function to clear everything
-function clearCart() {
-    if (confirm("Are you sure you want to clear your cart?")) {
-        cartItems = []; // Empty the array
-        updateCartDisplay(); // Reset the header count
-        showCartModal(); // Refresh the modal view (it will show "empty")
-    }
-}
-
-// Add the event listener (put this with your other listeners at the bottom)
-document.getElementById('clear-cart').addEventListener('click', clearCart);
