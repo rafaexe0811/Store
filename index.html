@@ -7,47 +7,48 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
     <header>
         <h1>A Real Simple Drink Store</h1>
-        <div id="cart">
-            <span>Cart: <span id="cart-count">0</span> items</span>
+        <div id="cart-btn">
+            Cart: <span id="cart-count">0</span> items
         </div>
     </header>
 
-    <main id="product-grid">
+    <main class="product-grid">
         <div class="product" data-name="Orange Juice" data-price="60">
-            <img src="https://golden-goods.com/wp-content/uploads/2022/12/638071123624300000-2.jpg" alt="Orange Juice" class="product-image">
+            <img src="https://golden-goods.com/wp-content/uploads/2022/12/638071123624300000-2.jpg" class="product-image">
             <h2>Orange Juice</h2>
-            <p>Price: NT$ 60</p>
+            <p>NT$ 60</p>
             <button class="add-to-cart">Add to Cart</button>
         </div>
+
         <div class="product" data-name="Grape Juice" data-price="60">
-            <img src="https://img.91app.com/webapi/imagesV3/Original/SalePage/6678640/0/639107285631370000?v=1" alt="Grape Juice" class="product-image">
+            <img src="https://img.91app.com/webapi/imagesV3/Original/SalePage/6678640/0/639107285631370000?v=1" class="product-image">
             <h2>Grape Juice</h2>
-            <p>Price: NT$ 60</p>
+            <p>NT$ 60</p>
             <button class="add-to-cart">Add to Cart</button>
         </div>
+
         <div class="product" data-name="Coca-Cola" data-price="50">
-            <img src="https://lcp-prod-obs.line-scdn.net/0hpIs3LhyVL2ZOSj-PHNdQMR8XIxd9OytuJzIyW2pLGh05exdVL2wzXxcDIw0TexNvDiQwXxtJCgkDcgNCGSwBZRwXDSAbegBZFWUISxdIGh0TJjhVc2o/f640w" alt="Coca-Cola" class="product-image">
+            <img src="https://lcp-prod-obs.line-scdn.net/0hpIs3LhyVL2ZOSj-PHNdQMR8XIxd9OytuJzIyW2pLGh05exdVL2wzXxcDIw0TexNvDiQwXxtJCgkDcgNCGSwBZRwXDSAbegBZFWUISxdIGh0TJjhVc2o/f640w" class="product-image">
             <h2>Coca-Cola</h2>
-            <p>Price: NT$ 50</p>
+            <p>NT$ 50</p>
             <button class="add-to-cart">Add to Cart</button>
         </div>
     </main>
 
-    <div id="cart-modal">
+    <div id="cart-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close-btn">&times;</span>
             <h2>Your Cart</h2>
-            <div id="cart-items"></div>
-            <div id="cart-total"></div>
-            <button id="clear-cart-btn">Clear Cart</button>
+            <div id="cart-items-container"></div>
+            <div id="cart-total-container"></div>
+            <button id="clear-cart-action">Clear Cart</button>
         </div>
     </div>
 
-    <footer>
-        <p>made by Rafa</p>
-    </footer>
+    <footer>made by Rafa</footer>
 
     <script src="script.js"></script>
 </body>
