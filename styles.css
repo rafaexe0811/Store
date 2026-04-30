@@ -17,6 +17,7 @@ header {
     right: 20px;
     top: 20px;
     font-size: 1.2em;
+    cursor: pointer; /* Makes it look clickable */
 }
 main {
     display: flex;
