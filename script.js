@@ -1,73 +1,69 @@
-let cartItems = [];
+// Wait for the HTML to load before running code
+document.addEventListener('DOMContentLoaded', function() {
+    let cart = [];
 
-// 1. Update the Cart Number in Header
-function updateCartCount() {
-    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-    const countElement = document.getElementById('cart-count');
-    if (countElement) countElement.textContent = totalItems;
-}
+    // 1. Function to Refresh the UI
+    function refreshCartUI() {
+        // Update Header Count
+        const count = cart.reduce((total, item) => total + item.qty, 0);
+        document.getElementById('cart-count').innerText = count;
 
-// 2. Show the Modal with Items
-function showCart() {
-    const itemsContainer = document.getElementById('cart-items');
-    const totalContainer = document.getElementById('cart-total');
-    const modal = document.getElementById('cart-modal');
-    
-    if (!itemsContainer || !totalContainer || !modal) return;
-
-    itemsContainer.innerHTML = '';
-    
-    if (cartItems.length === 0) {
-        itemsContainer.innerHTML = '<p style="text-align:center; padding: 20px;">Your cart is empty.</p>';
-        totalContainer.innerHTML = '';
-    } else {
-        cartItems.forEach(item => {
-            itemsContainer.innerHTML += `
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
-                    <span>${item.name} x${item.quantity}</span>
-                    <span>NT$ ${item.price * item.quantity}</span>
-                </div>`;
-        });
-        const grandTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        totalContainer.innerHTML = `<div style="text-align:right; margin-top:15px;"><strong>Total: NT$ ${grandTotal}</strong></div>`;
-    }
-    
-    modal.style.display = 'block';
-}
-
-// 3. The Master Click Listener
-document.addEventListener('click', function(e) {
-    // --- ADD TO CART ---
-    if (e.target.classList.contains('add-to-cart')) {
-        const parent = e.target.closest('.product');
-        const name = parent.getAttribute('data-name');
-        const price = parseInt(parent.getAttribute('data-price'));
-
-        const existing = cartItems.find(i => i.name === name);
-        if (existing) {
-            existing.quantity++;
+        // Update Modal Items
+        const listDiv = document.getElementById('cart-items-container');
+        const totalDiv = document.getElementById('cart-total-container');
+        
+        listDiv.innerHTML = '';
+        if (cart.length === 0) {
+            listDiv.innerHTML = '<p>Your cart is empty.</p>';
+            totalDiv.innerHTML = '';
         } else {
-            cartItems.push({ name, price, quantity: 1 });
+            let grandTotal = 0;
+            cart.forEach(item => {
+                const lineTotal = item.price * item.qty;
+                grandTotal += lineTotal;
+                listDiv.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span>${item.name} (x${item.qty})</span>
+                        <span>NT$ ${lineTotal}</span>
+                    </div>`;
+            });
+            totalDiv.innerHTML = `<hr><strong>Total: NT$ ${grandTotal}</strong>`;
         }
-        updateCartCount();
-        console.log("Added to cart:", name);
     }
 
-    // --- OPEN CART ---
-    if (e.target.closest('#cart')) {
-        showCart();
-    }
+    // 2. Click Event Listeners
+    document.addEventListener('click', function(e) {
+        
+        // Add to Cart Button
+        if (e.target.classList.contains('add-to-cart')) {
+            const card = e.target.closest('.product');
+            const name = card.getAttribute('data-name');
+            const price = parseInt(card.getAttribute('data-price'));
 
-    // --- CLOSE CART (X button or clicking outside) ---
-    if (e.target.classList.contains('close') || e.target.id === 'cart-modal') {
-        document.getElementById('cart-modal').style.display = 'none';
-    }
+            const found = cart.find(i => i.name === name);
+            if (found) {
+                found.qty++;
+            } else {
+                cart.push({ name: name, price: price, qty: 1 });
+            }
+            refreshCartUI();
+        }
 
-    // --- CLEAR CART (The fix is here) ---
-    if (e.target.id === 'clear-cart-btn') {
-        console.log("Clear button clicked!"); // This helps us debug
-        cartItems = []; // Wipe the data
-        updateCartCount(); // Reset header
-        showCart(); // Refresh the list to show "Empty"
-    }
+        // Open Modal
+        if (e.target.closest('#cart-btn')) {
+            document.getElementById('cart-modal').style.display = 'block';
+            refreshCartUI();
+        }
+
+        // Close Modal (X button or background)
+        if (e.target.classList.contains('close-btn') || e.target.id === 'cart-modal') {
+            document.getElementById('cart-modal').style.display = 'none';
+        }
+
+        // Clear Cart Button Action
+        if (e.target.id === 'clear-cart-action') {
+            cart = []; // Empty the list
+            refreshCartUI(); // Update the display
+        }
+    });
 });
