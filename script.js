@@ -1,69 +1,62 @@
-// Wait for the HTML to load before running code
-document.addEventListener('DOMContentLoaded', function() {
-    let cart = [];
+let cartItems = [];
 
-    // 1. Function to Refresh the UI
-    function refreshCartUI() {
-        // Update Header Count
-        const count = cart.reduce((total, item) => total + item.qty, 0);
-        document.getElementById('cart-count').innerText = count;
+// Function to update the number in the header
+function updateCartCount() {
+    const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+    document.getElementById('cart-count').textContent = cartCount;
+}
 
-        // Update Modal Items
-        const listDiv = document.getElementById('cart-items-container');
-        const totalDiv = document.getElementById('cart-total-container');
-        
-        listDiv.innerHTML = '';
-        if (cart.length === 0) {
-            listDiv.innerHTML = '<p>Your cart is empty.</p>';
-            totalDiv.innerHTML = '';
+// Function to show the modal and its contents
+function updateCartModal() {
+    const cartItemsDisplay = document.getElementById('cart-items');
+    const cartTotalDisplay = document.getElementById('cart-total');
+
+    cartItemsDisplay.innerHTML = '';
+
+    if (cartItems.length === 0) {
+        cartItemsDisplay.innerHTML = '<div class="cart-item">Your cart is empty.</div>';
+        cartTotalDisplay.innerHTML = '';
+    } else {
+        cartItems.forEach(item => {
+            cartItemsDisplay.innerHTML += `<div class="cart-item">${item.name} (x${item.quantity}) - NT$ ${item.price * item.quantity}</div>`;
+        });
+        const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        cartTotalDisplay.innerHTML = `<strong>Total: NT$ ${total}</strong>`;
+    }
+}
+
+// Global Click Listener for all buttons
+document.addEventListener('click', (event) => {
+    // ADD TO CART
+    if (event.target.classList.contains('add-to-cart')) {
+        const productElement = event.target.parentElement;
+        const productName = productElement.dataset.name;
+        const productPrice = parseInt(productElement.dataset.price, 10);
+
+        const existingItem = cartItems.find(item => item.name === productName);
+        if (existingItem) {
+            existingItem.quantity++;
         } else {
-            let grandTotal = 0;
-            cart.forEach(item => {
-                const lineTotal = item.price * item.qty;
-                grandTotal += lineTotal;
-                listDiv.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span>${item.name} (x${item.qty})</span>
-                        <span>NT$ ${lineTotal}</span>
-                    </div>`;
-            });
-            totalDiv.innerHTML = `<hr><strong>Total: NT$ ${grandTotal}</strong>`;
+            cartItems.push({ name: productName, price: productPrice, quantity: 1 });
         }
+        updateCartCount();
     }
 
-    // 2. Click Event Listeners
-    document.addEventListener('click', function(e) {
-        
-        // Add to Cart Button
-        if (e.target.classList.contains('add-to-cart')) {
-            const card = e.target.closest('.product');
-            const name = card.getAttribute('data-name');
-            const price = parseInt(card.getAttribute('data-price'));
+    // OPEN MODAL
+    if (event.target.closest('#cart')) {
+        updateCartModal();
+        document.getElementById('cart-modal').style.display = "block";
+    }
 
-            const found = cart.find(i => i.name === name);
-            if (found) {
-                found.qty++;
-            } else {
-                cart.push({ name: name, price: price, qty: 1 });
-            }
-            refreshCartUI();
-        }
+    // CLOSE MODAL
+    if (event.target.matches('.close') || event.target.matches('#cart-modal')) {
+        document.getElementById('cart-modal').style.display = "none";
+    }
 
-        // Open Modal
-        if (e.target.closest('#cart-btn')) {
-            document.getElementById('cart-modal').style.display = 'block';
-            refreshCartUI();
-        }
-
-        // Close Modal (X button or background)
-        if (e.target.classList.contains('close-btn') || e.target.id === 'cart-modal') {
-            document.getElementById('cart-modal').style.display = 'none';
-        }
-
-        // Clear Cart Button Action
-        if (e.target.id === 'clear-cart-action') {
-            cart = []; // Empty the list
-            refreshCartUI(); // Update the display
-        }
-    });
+    // CLEAR CART
+    if (event.target.id === 'clear-cart') {
+        cartItems = []; // Wipe the array
+        updateCartCount(); // Update the top right number
+        updateCartModal(); // Update the list inside the popup
+    }
 });
