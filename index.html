@@ -35,28 +35,36 @@
         </div>
     </main>
 
-    <div id="cart-modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Your Cart</h2>
-            <div id="cart-items"></div>
-            <div id="cart-total"></div>
-            <button id="clear-cart-btn">Clear Cart</button>
+  <div id="cart-modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Your Cart</h2>
+        <div id="cart-items"></div>
+        <div id="cart-total"></div>
+
+        <div id="customer-info" style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+            <input type="text" id="cust-name" placeholder="Your Name" required style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="email" id="cust-email" placeholder="Your Email" required style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
+            <p style="color: #d9534f; font-weight: bold; font-size: 0.9em; text-align: center;">⚠️ Please Pay With Cash.</p>
         </div>
+
+        <button id="checkout-btn" style="width: 100%; margin-top: 10px; background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">Submit Order</button>
+        <button id="clear-cart-btn">Clear Cart</button>
     </div>
+</div>
+
+<form id="checkout-form" action="https://formsubmit.co/rafaeldistribution811@email.com" method="POST" style="display:none;">
+    <input type="hidden" name="_subject" value="New Drink Order!">
+    <input type="hidden" name="Customer_Name" id="form-name">
+    <input type="hidden" name="Customer_Email" id="form-email">
+    <input type="hidden" name="Order_Details" id="form-order-details">
+    <input type="hidden" name="Total_Price" id="form-total-price">
+    <input type="hidden" name="Payment_Method" value="Cash">
+</form>
 
     <footer>
         <p>made by Rafa</p>
     </footer>
-
-    <form id="checkout-form" action="https://formsubmit.co/rafaeldistribution811@email.com" method="POST" style="display:none;">
-    <input type="hidden" name="_subject" value="New Drink Order!">
-    <input type="hidden" name="order_details" id="form-order-details">
-    <input type="hidden" name="total_price" id="form-total-price">
-    <input type="hidden" name="_next" value="https://yourwebsite.com/thanks.html">
-    </form>
-
-<button id="checkout-btn" style="width: 100%; margin-top: 10px; background: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;">Checkout via Email</button>
 
     <script src="script.js"></script>
 </body>
