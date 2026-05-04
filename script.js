@@ -19,9 +19,18 @@ function showCart() {
     } else {
         cartItems.forEach(item => {
             itemsContainer.innerHTML += `
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                    <span>${item.name} x${item.quantity}</span>
-                    <span>NT$ ${item.price * item.quantity}</span>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <div style="display:flex; align-items:center;">
+                        <img src="${item.img}" style="width:50px; height:50px; object-fit:contain; margin-right:10px; border-radius:5px;">
+                        <div>
+                            <div style="font-weight:bold;">${item.name}</div>
+                            <div style="font-size:0.9em; color:#666;">NT$ ${item.price} x ${item.quantity}</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap: 10px;">
+                        <span>NT$ ${item.price * item.quantity}</span>
+                        <button class="remove-item" data-name="${item.name}" style="background:#ff4444; color:white; border:none; border-radius:3px; cursor:pointer; padding: 2px 8px;">×</button>
+                    </div>
                 </div>`;
         });
         const grandTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -46,6 +55,25 @@ document.addEventListener('click', function(e) {
             cartItems.push({ name, price, quantity: 1 });
         }
         updateCartCount();
+    }
+
+        // 5. Remove/Decrease Item Logic
+    if (e.target.classList.contains('remove-item')) {
+        const name = e.target.getAttribute('data-name');
+        const itemIndex = cartItems.findIndex(i => i.name === name);
+    
+        if (itemIndex > -1) {
+            if (cartItems[itemIndex].quantity > 1) {
+                // If more than 1, just decrease the count
+                cartItems[itemIndex].quantity--;
+            } else {
+                // If it's the last one, remove it from the array
+                cartItems.splice(itemIndex, 1);
+            }
+        }
+        
+        updateCartCount();
+        showCart(); // Refresh the modal view
     }
 
     // 2. Open Cart
