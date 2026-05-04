@@ -43,19 +43,21 @@ function showCart() {
 // THE BUTTON LOGIC
 document.addEventListener('click', function(e) {
     // 1. Add to Cart Logic
-    if (e.target.classList.contains('add-to-cart')) {
-        const parent = e.target.closest('.product');
-        const name = parent.getAttribute('data-name');
-        const price = parseInt(parent.getAttribute('data-price'));
+   if (e.target.classList.contains('add-to-cart')) {
+    const parent = e.target.closest('.product');
+    const name = parent.getAttribute('data-name');
+    const price = parseInt(parent.getAttribute('data-price'));
+    const img = parent.getAttribute('data-img'); // <--- CRITICAL: This grabs the URL
 
-        const existing = cartItems.find(i => i.name === name);
-        if (existing) {
-            existing.quantity++;
-        } else {
-            cartItems.push({ name, price, quantity: 1 });
-        }
-        updateCartCount();
+    const existing = cartItems.find(i => i.name === name);
+    if (existing) {
+        existing.quantity++;
+    } else {
+        // Ensure 'img' is being added to the new object
+        cartItems.push({ name, price, img, quantity: 1 }); 
     }
+    updateCartCount();
+}
 
         // 5. Remove/Decrease Item Logic
     if (e.target.classList.contains('remove-item')) {
