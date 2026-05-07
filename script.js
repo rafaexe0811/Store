@@ -97,34 +97,65 @@ document.addEventListener('click', function(e) {
     }
 
             // 6. Checkout Logic
-    if (e.target.id === 'checkout-btn') {
-        const nameInput = document.getElementById('cust-name').value.trim();
-        const emailInput = document.getElementById('cust-email').value.trim();
-    
-        // 1. Validation
-        if (cartItems.length === 0) {
-            alert("Your cart is empty!");
-            return;
-        }
-        if (nameInput === "" || emailInput === "") {
-            alert("Please enter your name and email to proceed.");
-            return;
-        }
-    
-        // 2. Prepare order summary
-        let orderSummary = cartItems.map(item => 
-            `${item.name} (x${item.quantity}) - NT$ ${item.price * item.quantity}`
-        ).join('\n');
-    
-        const grandTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
-        // 3. Fill the hidden form
-        document.getElementById('form-name').value = nameInput;
-        document.getElementById('form-email').value = emailInput;
-        document.getElementById('form-order-details').value = orderSummary;
-        document.getElementById('form-total-price').value = `NT$ ${grandTotal}`;
-    
-        // 4. Submit
-        document.getElementById('checkout-form').submit();
+if (e.target.id === 'checkout-btn') {
+    const nameInput = document.getElementById('cust-name').value.trim();
+    const emailInput = document.getElementById('cust-email').value.trim();
+    const checkoutBtn = document.getElementById('checkout-btn');
+
+    if (cartItems.length === 0) {
+        alert("Your cart is empty!");
+        return;
     }
-});
+    if (nameInput === "" || emailInput === "") {
+        alert("Please enter your name and email.");
+        return;
+    }
+
+    // Disable button so they don't click twice
+    checkoutBtn.disabled = true;
+    checkoutBtn.textContent = "Sending...";
+
+    // Prepare data
+    let orderSummary = cartItems.map(item => 
+        `${item.name} (x${item.quantity}) - NT$ ${item.price * item.quantity}`
+    ).join('\n');
+    const grandTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // Send via Fetch (AJAX)
+    fetch("https://formsubmit.co/ajax/your@email.com", {
+        method: "POST",
+        headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            Name: nameInput,
+            Email: emailInput,
+            Order: orderSummary,
+            Total: `NT$ ${grandTotal}`,
+            Payment: "Cash"
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Success! 
+        alert("Thank you for your order! You will get your order soon.");
+        
+        // Reset everything
+        cartItems = [];
+        document.getElementById('cust-name').value = '';
+        document.getElementById('cust-email').value = '';
+        updateCartCount();
+        document.getElementById('cart-modal').style.display = 'none';
+        
+        // Reset button
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = "Submit Order";
+    })
+    .catch(error => {
+        console.log(error);
+        alert("Something went wrong. Please try again.");
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = "Submit Order";
+    });
+}
