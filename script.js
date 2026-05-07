@@ -98,7 +98,10 @@ document.addEventListener('click', function(e) {
 
             // 6. Checkout Logic
 if (e.target.id === 'checkout-btn') {
+    e.preventDefault(); // <--- THIS PREVENTS THE BLACK WINDOW FROM OPENING
+    
     const nameInput = document.getElementById('cust-name').value.trim();
+    // ... the rest of your code ...
     const emailInput = document.getElementById('cust-email').value.trim();
     const checkoutBtn = document.getElementById('checkout-btn');
 
@@ -136,11 +139,21 @@ if (e.target.id === 'checkout-btn') {
             Payment: "Cash"
         })
     })
-    .then(response => response.json())
+    .then(response => {
+    if (response.status === 429) {
+        throw new Error("Too many requests! Please wait a few minutes before trying again.");
+    }
+    return response.json();
+})
     .then(data => {
-        // Success! 
-        alert("Thank you for your order! You will get your order soon.");
-        
+        alert("Thank you for your order!");
+        // ... clear cart logic ...
+    })
+    .catch(error => {
+        alert(error.message); // This will now say "Too many requests!" instead of failing silently
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = "Submit Order";
+    });
         // Reset everything
         cartItems = [];
         document.getElementById('cust-name').value = '';
